@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>외대 장학봄</title>
+<meta name="description" content="내 조건으로 한국외대 장학 공고를 찾고, 지원 요건을 확인하고, 신청 준비까지 이어가는 서비스">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>외대 장학봄 <small>놓쳤던 장학금을 찾아봄 · 내 조건을 확인해봄 · 새로운 기회를 준비해봄</small></h1>
+    <span class="snap" id="snap"></span>
+  </header>
+  <p class="disclaimer">학생이 만든 비공식 서비스예요. 결과는 입력한 조건만으로 비교한 것이고, 최종 지원 자격과 일정은 반드시 원문 공고에서 확인하세요.</p>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="mine" aria-selected="true">찾아봄 <span class="count" id="c-mine"></span></button>
+    <button role="tab" data-tab="all" aria-selected="false">모집 중 전체 <span class="count" id="c-all"></span></button>
+    <button role="tab" data-tab="fav" aria-selected="false">준비해봄 <span class="count" id="c-fav"></span></button>
+    <button role="tab" data-tab="past" aria-selected="false">지난 장학금 <span class="count" id="c-past"></span></button>
+  </nav>
+
+  <section id="tab-mine" class="grid">
+    <form id="profile" class="panel" autocomplete="off">
+      <h2>내 조건</h2>
+      <p class="hint">아는 것만 입력하세요. 비워 둔 항목 때문에 공고가 빠지지 않아요.</p>
+      <label>캠퍼스
+        <select name="campus"><option value="">모름 / 입력 안 함</option><option>서울</option><option>글로벌</option></select></label>
+      <label>학과
+        <input name="dept" list="dl-dept" placeholder="예: 베트남어과"></label>
+      <datalist id="dl-dept"></datalist>
+      <label>재학 학기 <span class="sub" id="sem-basis"></span>
+        <select name="sem"><option value="">모름 / 입력 안 함</option></select></label>
+      <div class="two">
+        <label>직전 학기 평점
+          <input name="gpaLast" type="number" min="0" max="4.5" step="0.01" placeholder="예: 3.70"></label>
+        <label>전체 평점
+          <input name="gpaTotal" type="number" min="0" max="4.5" step="0.01" placeholder="예: 3.85"></label>
+      </div>
+      <label>학자금 지원구간
+        <select name="income"><option value="">모름 / 입력 안 함</option></select></label>
+      <div class="two">
+        <label>지역 (시·도)
+          <select name="sido"><option value="">입력 안 함</option></select></label>
+        <label>시·군·구
+          <input name="sgg" list="dl-sgg" placeholder="예: 통영시"></label>
+      </div>
+      <datalist id="dl-sgg"></datalist>
+      <fieldset>
+        <legend>해당 사항</legend>
+        <div id="specials" class="checks"></div>
+        <label class="check"><input type="checkbox" name="specialsNone"> 해당 사항 없음</label>
+      </fieldset>
+      <div class="actions">
+        <button type="submit" class="primary">이 조건으로 검색</button>
+        <button type="button" id="clear">내 조건 지우기</button>
+      </div>
+      <label class="check"><input type="checkbox" name="remember"> 이 기기에 조건 저장</label>
+      <p class="hint">입력한 조건은 서버로 보내지 않고 이 브라우저 안에서만 비교해요. 저장을 켜지 않으면 창을 닫을 때 사라져요.</p>
+    </form>
+    <div>
+      <p class="applied" id="applied"></p>
+      <div id="list-mine"></div>
+      <details class="panel sim" id="sim">
+        <summary>목표 성적·지원구간으로 미리 보기</summary>
+        <p class="hint">성적이나 지원구간이 달라지면 어떤 공고의 요건을 새로 충족하는지 보여줘요. 선발 가능성을 예측하는 기능이 아니에요.</p>
+        <div class="two">
+          <label>목표 평점 <input id="t-gpa" type="number" min="0" max="4.5" step="0.01" placeholder="예: 3.80"></label>
+          <label>가정할 지원구간 <select id="t-income"><option value="">그대로</option></select></label>
+        </div>
+        <div id="sim-out"></div>
+      </details>
+    </div>
+  </section>
+
+  <section id="tab-all" hidden>
+    <div class="filters" id="filters"></div>
+    <div id="list-all"></div>
+  </section>
+  <section id="tab-fav" hidden><div id="list-fav"></div></section>
+  <section id="tab-past" hidden>
+    <p class="hint">모집이 끝난 공고예요. 다음 모집을 미리 준비할 때 참고하세요. 과거 모집 이력이 다음 모집을 보장하지는 않아요.</p>
+    <div id="list-past"></div>
+  </section>
+
+  <footer>
+    <p>공고 출처: <a id="board" target="_blank" rel="noopener">한국외대 학생지원·장학팀 장학(공지) 게시판</a>. 공고마다 수집일을 표시하며, 수집 이후 내용이 바뀌었을 수 있어요.</p>
+  </footer>
+</div>
+
+<dialog id="detail" aria-labelledby="d-title"></dialog>
+
+<script src="data/scholarships.js"></script>
+<script src="js/logic.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
