@@ -55,7 +55,7 @@ node --test
 
 ```
 index.html              화면 뼈대
-styles.css              스타일 (보라 그라데이션 테마, 라이트/다크)
+styles.css              스타일 (한국외대 공식 색상 남색 테마, 라이트/다크)
 js/logic.js             조건 비교, 마감 계산, 체크리스트, .ics 생성
 js/app.js               화면 그리기와 입력 처리
 data/scholarships.js    공고 데이터

@@ -1,23 +1,24 @@
-/* 화면 구성: 보라 그라데이션 머리말 + 알약 모양 탭 + (왼쪽 조건 패널 / 오른쪽 결과 카드).
-   좁은 화면에서는 한 줄로 쌓인다. 모서리는 크게 둥글리고 그림자는 옅은 보라로 통일한다. */
+/* 화면 구성: 남색 그라데이션 머리말 + 알약 모양 탭 + (왼쪽 조건 패널 / 오른쪽 결과 카드).
+   좁은 화면에서는 한 줄로 쌓인다. 모서리는 크게 둥글리고 색은 한국외대 공식 색상(남색 중심)을 쓴다. */
 :root {
-  --bg: #f7f7fc; --surface: #ffffff; --soft: #efeefe; --line: #e3e1f6;
-  --fg: #1f1d3a; --muted: #6b6a85;
-  --accent: #5b4be0; --accent-soft: #ebe9ff; --on-accent: #ffffff;
-  --ok: #17794a; --ok-soft: #e1f5e9; --warn: #8a5a00; --warn-soft: #fff1d6; --hot: #c2302b; --hot-soft: #fde8e6;
-  --hero: linear-gradient(135deg, #6a5cf0 0%, #8f8bff 48%, #b9d4ff 100%);
-  --shadow: 0 8px 28px rgba(91, 75, 224, 0.1);
+  /* 한국외대 UI 컬러시스템: HUFS NAVY #002D56 (PANTONE 7463C), HUFS GREEN #146E7A (PANTONE 315C), HUFS GOLD #8D7150 (PANTONE 874C) */
+  --bg: #f5f7fa; --surface: #ffffff; --soft: #eaf0f6; --line: #d6dfe9;
+  --fg: #0d1b2a; --muted: #5a6878;
+  --accent: #002d56; --accent-soft: #e1eaf3; --on-accent: #ffffff; --gold: #8d7150;
+  --ok: #146e7a; --ok-soft: #dff1f3; --warn: #7a5a1e; --warn-soft: #f6eede; --hot: #b3261e; --hot-soft: #fbe7e5;
+  --hero: linear-gradient(135deg, #002d56 0%, #0a4a73 55%, #146e7a 100%);
+  --shadow: 0 8px 28px rgba(0, 45, 86, 0.1);
   --font: -apple-system, "Apple SD Gothic Neo", "Pretendard", "Malgun Gothic", "Noto Sans KR", sans-serif;
   --num: ui-rounded, "SF Pro Rounded", -apple-system, "Apple SD Gothic Neo", sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #13121f; --surface: #1c1b2e; --soft: #232140; --line: #34315a;
-    --fg: #ecebfa; --muted: #a5a3c4;
-    --accent: #a9a0ff; --accent-soft: #2b2853; --on-accent: #17152b;
-    --ok: #6fd69a; --ok-soft: #173326; --warn: #ecbb62; --warn-soft: #382c14; --hot: #ff9089; --hot-soft: #3d1f1d;
-    --hero: linear-gradient(135deg, #3d33a8 0%, #5450c4 48%, #4a6aa8 100%);
-    --shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+    --bg: #0b1420; --surface: #13202f; --soft: #182a3d; --line: #29405a;
+    --fg: #e8eef5; --muted: #9db0c4;
+    --accent: #9cc3ea; --accent-soft: #1c3550; --on-accent: #0b1420; --gold: #c9ab84;
+    --ok: #6fc7d1; --ok-soft: #123239; --warn: #dcbc85; --warn-soft: #33290f; --hot: #ff9089; --hot-soft: #3d1f1d;
+    --hero: linear-gradient(135deg, #001f3d 0%, #07385a 55%, #0f5560 100%);
+    --shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
     color-scheme: dark;
   }
 }
@@ -38,7 +39,7 @@ h3 { font-size: 0.95rem; margin: 22px 0 8px; color: var(--accent); }
 .brand { font-weight: 700; letter-spacing: 0.01em; }
 .snap { font-size: 0.75rem; background: rgba(255, 255, 255, 0.22); border-radius: 999px; padding: 4px 12px; }
 .hero h1 { font-size: clamp(1.8rem, 5vw, 2.4rem); margin: 18px 0 6px; letter-spacing: -0.02em; }
-.hero h1::before { content: ""; display: block; width: 22px; height: 22px; margin: 0 auto 10px; border-radius: 8px; background: rgba(255, 255, 255, 0.9); transform: rotate(45deg); }
+.hero h1::before { content: ""; display: block; width: 22px; height: 22px; margin: 0 auto 10px; border-radius: 8px; background: #c9ab84; transform: rotate(45deg); }
 .lead { margin: 0 0 18px; font-size: 1rem; opacity: 0.95; }
 .disclaimer { display: inline-block; max-width: 640px; margin: 0; font-size: 0.8rem; background: rgba(255, 255, 255, 0.2); border-radius: 18px; padding: 8px 16px; }
 
@@ -94,7 +95,7 @@ button.primary { background: var(--accent); border-color: var(--accent); color: 
 .st.no { background: var(--hot-soft); color: var(--hot); }
 .st.closed { background: var(--bg); color: var(--muted); }
 .star { border: 0; background: none; font-size: 1.4rem; line-height: 1; padding: 4px; color: var(--muted); }
-.star[aria-pressed="true"] { color: #e0a100; }
+.star[aria-pressed="true"] { color: var(--gold); }
 .progress { font-size: 0.8rem; color: var(--muted); margin: 6px 0 0; }
 
 /* 필터 */
@@ -105,7 +106,7 @@ button.primary { background: var(--accent); border-color: var(--accent); color: 
 
 /* 상세 창 */
 dialog { width: min(700px, calc(100vw - 24px)); max-height: calc(100vh - 32px); border: 0; border-radius: 32px; background: var(--surface); color: var(--fg); padding: 26px; box-shadow: var(--shadow); }
-dialog::backdrop { background: rgba(31, 29, 58, 0.5); }
+dialog::backdrop { background: rgba(0, 20, 40, 0.55); }
 .d-head { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
 .d-head h2 { font-size: 1.25rem; }
 table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.85rem; background: var(--soft); border-radius: 18px; overflow: hidden; }
@@ -130,7 +131,7 @@ ul.todo button { margin-left: auto; padding: 0 8px; border: 0; background: none;
 .cal-head h2 { margin: 0; min-width: 130px; text-align: center; color: var(--accent); }
 .cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
 .cal .dow { text-align: center; font-size: 0.78rem; font-weight: 600; color: var(--muted); padding: 4px 0; }
-.cal .day { min-height: 88px; background: var(--surface); border: 1px solid transparent; border-radius: 16px; padding: 6px 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(91, 75, 224, 0.05); }
+.cal .day { min-height: 88px; background: var(--surface); border: 1px solid transparent; border-radius: 16px; padding: 6px 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 45, 86, 0.05); }
 .cal .day .n { font-family: var(--num); font-size: 0.8rem; font-weight: 600; color: var(--muted); }
 .cal .day.today { border-color: var(--accent); }
 .cal .day.today .n { color: var(--accent); font-weight: 800; }
