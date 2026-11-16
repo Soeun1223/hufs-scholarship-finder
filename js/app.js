@@ -39,7 +39,6 @@
     for (let i = 0; i <= 10; i++) {
       const label = i === 0 ? "기초·차상위" : `${i}구간`;
       f.income.add(new Option(label, i));
-      $("#t-income").add(new Option(label, i));
     }
     SIDO.forEach((s) => f.sido.add(new Option(s)));
     $("#dl-dept").innerHTML = uniq(items.flatMap((r) => r.deptAny || [])).map((d) => `<option value="${esc(d)}">`).join("");
@@ -62,8 +61,6 @@
     });
     f.remember.addEventListener("change", () => { if (!f.remember.checked) store.del("hsf-profile"); });
     $("#clear").addEventListener("click", () => { f.reset(); store.del("hsf-profile"); applied = {}; renderAll(); });
-    $("#t-gpa").addEventListener("input", renderSim);
-    $("#t-income").addEventListener("change", renderSim);
   }
 
   const num = (v) => (v === "" || v == null ? null : Number(v));
@@ -114,8 +111,9 @@
       ${ddayBox(r)}
       <div>
         <h3>${esc(r.title)}</h3>
-        <p class="meta">${esc(r.provider)} · ${esc(r.cat)} · ${esc(r.campus)} · ${esc(r.method)}</p>
+        <p class="meta">${esc(r.provider)}</p>
         <p class="amount">${esc(r.amount)}</p>
+        <p class="tags">${[r.cat, r.campus === "공통" ? "캠퍼스 공통" : `${r.campus}캠퍼스`, r.method].map((t) => `<span>#${esc(t)}</span>`).join("")}</p>
         ${st}${why ? `<p class="why">${esc(why)}</p>` : ""}${extra || ""}
       </div>
       <button class="star" data-star="${r.id}" aria-pressed="${favs.has(r.id)}" aria-label="관심 장학금 ${favs.has(r.id) ? "해제" : "저장"}">${favs.has(r.id) ? "★" : "☆"}</button>
@@ -135,7 +133,6 @@
       ? group("ok", STATE.ok) + group("need", STATE.need) + group("no", STATE.no)
       : empty("지금 모집 중인 공고가 없어요. 지난 장학금 탭에서 다음 모집을 준비해 보세요.");
     $("#c-mine").textContent = judged.filter((x) => x.j.state === "ok").length || "";
-    renderSim();
   }
 
   function renderAllTab() {
@@ -171,19 +168,6 @@
     const rows = past();
     $("#list-past").innerHTML = rows.length ? rows.map((r) => card(r, L.judge(r, applied))).join("") : empty("지난 공고가 아직 없어요.");
     $("#c-past").textContent = rows.length || "";
-  }
-
-  function renderSim() {
-    const target = { gpa: num($("#t-gpa").value), income: num($("#t-income").value) };
-    if (target.gpa == null && target.income == null) { $("#sim-out").innerHTML = ""; return; }
-    const hit = (rows) => rows.map((r) => ({ r, met: L.newlyMet(r, applied, target) })).filter((x) => x.met.length);
-    const line = (x) => `<li><a href="#" data-open="${x.r.id}">${esc(x.r.title)}</a> — ${x.met.map((m) => `${esc(m.label)} ${esc(m.need)}`).join(", ")}</li>`;
-    const now = hit(open()), old = hit(past());
-    $("#sim-out").innerHTML = `
-      <h3>현재 모집 중 ${now.length}건</h3>
-      ${now.length ? `<ul>${now.map(line).join("")}</ul><p class="hint">현재 모집에는 공고에서 정한 확정 성적이 적용돼요. 지금 성적으로는 요건과 달라요.</p>` : `<p class="hint">새로 요건을 충족하는 공고가 없어요.</p>`}
-      <h3>지난 공고 ${old.length}건</h3>
-      ${old.length ? `<ul>${old.map(line).join("")}</ul><p class="hint">지난 모집의 요건이에요. 다음 모집에서는 달라질 수 있어요.</p>` : `<p class="hint">새로 요건을 충족하는 공고가 없어요.</p>`}`;
   }
 
   // ── 마감 달력 ──

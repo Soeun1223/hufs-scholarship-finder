@@ -9,11 +9,12 @@
 </head>
 <body>
 <div class="wrap">
-  <header class="top">
-    <h1>외대 장학 찾기 <small>모집 중인 장학 공고를 조건별로 분류해 나에게 맞는 장학금을 바로 찾아요</small></h1>
-    <span class="snap" id="snap"></span>
+  <header class="hero">
+    <div class="hero-top"><span class="brand">HUFS Scholarship</span><span class="snap" id="snap"></span></div>
+    <h1>외대 장학 찾기</h1>
+    <p class="lead">모집 중인 장학 공고를 조건별로 분류해<br>나에게 맞는 장학금을 바로 찾아요.</p>
+    <p class="disclaimer">학생이 만든 비공식 서비스예요. 결과는 입력한 조건만으로 비교한 것이고, 최종 지원 자격과 일정은 반드시 원문 공고에서 확인하세요.</p>
   </header>
-  <p class="disclaimer">학생이 만든 비공식 서비스예요. 결과는 입력한 조건만으로 비교한 것이고, 최종 지원 자격과 일정은 반드시 원문 공고에서 확인하세요.</p>
 
   <nav class="tabs" role="tablist">
     <button role="tab" data-tab="mine" aria-selected="true">나에게 맞는 장학금 <span class="count" id="c-mine"></span></button>
@@ -64,15 +65,6 @@
     <div>
       <p class="applied" id="applied"></p>
       <div id="list-mine"></div>
-      <details class="panel sim" id="sim">
-        <summary>목표 성적·지원구간으로 미리 보기</summary>
-        <p class="hint">성적이나 지원구간이 달라지면 어떤 공고의 요건을 새로 충족하는지 보여줘요. 선발 가능성을 예측하는 기능이 아니에요.</p>
-        <div class="two">
-          <label>목표 평점 <input id="t-gpa" type="number" min="0" max="4.5" step="0.01" placeholder="예: 3.80"></label>
-          <label>가정할 지원구간 <select id="t-income"><option value="">그대로</option></select></label>
-        </div>
-        <div id="sim-out"></div>
-      </details>
     </div>
   </section>
 

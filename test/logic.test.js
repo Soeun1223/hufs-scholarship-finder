@@ -30,6 +30,11 @@ test("입력하지 않은 항목은 자격 미달이 아니라 확인 필요", (
   assert.ok(j.items.every((i) => i.result === "unknown"));
 });
 
+test("입력하지 않은 항목의 내 조건은 '입력 안 함'으로 표시", () => {
+  const r = { ...base, campus: "글로벌", gpaMin: 2.0, gpaBasis: "직전학기", lowIncome: true, sem: [1, 8], incomeMax: 8 };
+  assert.ok(L.judge(r, {}).items.every((i) => i.mine === "입력 안 함"));
+});
+
 test("학기 범위", () => {
   const r = { ...base, sem: [4, 4] };
   assert.equal(L.judge(r, { sem: 4 }).state, "ok");
@@ -73,13 +78,6 @@ test("마감: 당일까지 모집 중, 다음 날부터 마감", () => {
   assert.equal(L.dday(base, new Date(2026, 10, 20, 9, 0)), 0);
   assert.equal(L.isOpen(base, new Date(2026, 10, 21)), false);
   assert.equal(L.isOpen({ ...base, deadline: null, rolling: true }, new Date(2030, 0, 1)), true);
-});
-
-test("목표 성적을 가정하면 새로 충족하는 요건을 찾는다", () => {
-  const r = { ...base, gpaMin: 3.5, gpaBasis: "직전학기" };
-  assert.equal(L.newlyMet(r, { gpaLast: 3.2 }, { gpa: 3.6 }).length, 1);
-  assert.equal(L.newlyMet(r, { gpaLast: 3.2 }, { gpa: 3.4 }).length, 0);
-  assert.equal(L.newlyMet(r, { gpaLast: 3.8 }, { gpa: 4.0 }).length, 0);
 });
 
 test("체크리스트: 학교 추천과 제출 서류 반영", () => {

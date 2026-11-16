@@ -37,7 +37,7 @@
   function judge(r, p) {
     const items = [];
     const add = (key, label, need, mine, result, note) =>
-      items.push({ key, label, need, mine: has(mine) ? String(mine) : "입력 안 함", result, note: note || "" });
+      items.push({ key, label, need, mine: has(mine) && mine !== false ? String(mine) : "입력 안 함", result, note: note || "" });
 
     if (r.campus && r.campus !== "공통") {
       add("campus", "캠퍼스", `${r.campus}캠퍼스`, p.campus && `${p.campus}캠퍼스`,
@@ -112,19 +112,6 @@
     return { state, items };
   }
 
-  // 목표 성적·지원구간을 가정했을 때 새로 충족하게 되는 요건 (현재는 다름 -> 가정하면 충족)
-  function newlyMet(r, p, target) {
-    const before = judge(r, p).items;
-    const q = Object.assign({}, p);
-    if (has(target.gpa)) { q.gpaLast = target.gpa; q.gpaTotal = target.gpa; }
-    if (has(target.income)) q.income = target.income;
-    const after = judge(r, q).items;
-    return after.filter((a) => {
-      const b = before.find((x) => x.key === a.key);
-      return (a.key === "gpa" || a.key === "income") && a.result === "pass" && b && b.result !== "pass";
-    });
-  }
-
   // 신청 준비 체크리스트. 공고에 적힌 내용만으로 만든다.
   function checklist(r) {
     const list = [{ key: "read", text: "원문 공고와 첨부파일 끝까지 읽기" }];
@@ -169,5 +156,5 @@
     return lines.join("\r\n") + "\r\n";
   }
 
-  return { parseD, dday, isOpen, closedOn, judge, newlyMet, checklist, calEvents, buildICS };
+  return { parseD, dday, isOpen, closedOn, judge, checklist, calEvents, buildICS };
 });
