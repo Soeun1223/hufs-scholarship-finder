@@ -3,22 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>외대 장학봄</title>
+<title>외대 장학 찾기</title>
 <meta name="description" content="내 조건으로 한국외대 장학 공고를 찾고, 지원 요건을 확인하고, 신청 준비까지 이어가는 서비스">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div class="wrap">
   <header class="top">
-    <h1>외대 장학봄 <small>놓쳤던 장학금을 찾아봄 · 내 조건을 확인해봄 · 새로운 기회를 준비해봄</small></h1>
+    <h1>외대 장학 찾기 <small>모집 중인 장학 공고를 조건별로 분류해 나에게 맞는 장학금을 바로 찾아요</small></h1>
     <span class="snap" id="snap"></span>
   </header>
   <p class="disclaimer">학생이 만든 비공식 서비스예요. 결과는 입력한 조건만으로 비교한 것이고, 최종 지원 자격과 일정은 반드시 원문 공고에서 확인하세요.</p>
 
   <nav class="tabs" role="tablist">
-    <button role="tab" data-tab="mine" aria-selected="true">찾아봄 <span class="count" id="c-mine"></span></button>
+    <button role="tab" data-tab="mine" aria-selected="true">나에게 맞는 장학금 <span class="count" id="c-mine"></span></button>
     <button role="tab" data-tab="all" aria-selected="false">모집 중 전체 <span class="count" id="c-all"></span></button>
-    <button role="tab" data-tab="fav" aria-selected="false">준비해봄 <span class="count" id="c-fav"></span></button>
+    <button role="tab" data-tab="cal" aria-selected="false">마감 달력</button>
+    <button role="tab" data-tab="fav" aria-selected="false">관심 장학금 <span class="count" id="c-fav"></span></button>
     <button role="tab" data-tab="past" aria-selected="false">지난 장학금 <span class="count" id="c-past"></span></button>
   </nav>
 
@@ -78,6 +79,11 @@
   <section id="tab-all" hidden>
     <div class="filters" id="filters"></div>
     <div id="list-all"></div>
+  </section>
+  <section id="tab-cal" hidden>
+    <div class="cal-head"><button id="cal-prev" aria-label="이전 달">‹</button><h2 id="cal-title"></h2><button id="cal-next" aria-label="다음 달">›</button></div>
+    <div id="cal" class="cal"></div>
+    <p class="hint">모집 중인 공고의 마감일이에요. 상시 모집 공고는 달력에 나오지 않아요.</p>
   </section>
   <section id="tab-fav" hidden><div id="list-fav"></div></section>
   <section id="tab-past" hidden>

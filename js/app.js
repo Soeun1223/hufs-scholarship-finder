@@ -1,6 +1,6 @@
 // 화면 그리기와 사용자 입력 처리. 조건 비교는 logic.js, 공고는 data/scholarships.js.
 (function () {
-  const { meta, items } = window.HJB_DATA;
+  const { meta, items } = window.HSF_DATA;
   const L = window.Logic;
   const TODAY = new Date();
   const $ = (s) => document.querySelector(s);
@@ -15,10 +15,11 @@
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* 저장 불가 환경에서는 무시 */ } },
     del(k) { try { localStorage.removeItem(k); } catch (e) { /* 무시 */ } },
   };
-  const favs = new Set(store.get("hjb-favs", []));
-  const checks = store.get("hjb-checks", {}); // { [id]: { done: [key], custom: [text] } }
+  const favs = new Set(store.get("hsf-favs", []));
+  const checks = store.get("hsf-checks", {}); // { [id]: { done: [key], custom: [text] } }
   let applied = {};
-  let filter = { cat: "전체", soon: false };
+  let filter = { cat: "전체", campus: "전체", soon: false, rolling: false, recommend: false };
+  let calMonth = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
 
   const SIDO = ["서울특별시", "부산광역시", "대구광역시", "인천광역시", "광주광역시", "대전광역시", "울산광역시", "세종특별자치시", "경기도", "강원특별자치도", "충청북도", "충청남도", "전북특별자치도", "전라남도", "경상북도", "경상남도", "제주특별자치도"];
   const uniq = (a) => [...new Set(a)];
@@ -48,19 +49,19 @@
     $("#snap").textContent = `공고 수집일 ${fmt(meta.collectedAt)}`;
     $("#board").href = meta.board;
 
-    const saved = store.get("hjb-profile", null);
+    const saved = store.get("hsf-profile", null);
     if (saved) { fillForm(saved); f.remember.checked = true; applied = saved; }
 
     f.addEventListener("submit", (e) => {
       e.preventDefault();
       applied = readForm();
-      if (f.remember.checked) store.set("hjb-profile", applied); else store.del("hjb-profile");
+      if (f.remember.checked) store.set("hsf-profile", applied); else store.del("hsf-profile");
       renderAll();
       // 좁은 화면에서는 결과가 폼 아래에 있으므로 결과로 이동한다.
       if (window.matchMedia("(max-width: 820px)").matches) $("#applied").scrollIntoView({ behavior: "smooth" });
     });
-    f.remember.addEventListener("change", () => { if (!f.remember.checked) store.del("hjb-profile"); });
-    $("#clear").addEventListener("click", () => { f.reset(); store.del("hjb-profile"); applied = {}; renderAll(); });
+    f.remember.addEventListener("change", () => { if (!f.remember.checked) store.del("hsf-profile"); });
+    $("#clear").addEventListener("click", () => { f.reset(); store.del("hsf-profile"); applied = {}; renderAll(); });
     $("#t-gpa").addEventListener("input", renderSim);
     $("#t-income").addEventListener("change", renderSim);
   }
@@ -90,7 +91,7 @@
   }
 
   // ── 카드 ──
-  const STATE = { ok: "지원 가능 (입력 조건 기준)", need: "추가 확인 필요", no: "현재 조건과 다름" };
+  const STATE = { ok: "지원 가능 (입력 조건 기준)", need: "확인 필요", no: "현재 조건과 다름" };
   function whyText(j) {
     if (j.state === "no") return j.items.filter((i) => i.result === "fail").map((i) => `${i.label}: ${i.need}`).join(" · ");
     if (j.state === "need") {
@@ -139,9 +140,16 @@
 
   function renderAllTab() {
     const cats = ["전체", ...uniq(items.map((r) => r.cat))];
+    const toggle = (key, label) => `<button data-toggle="${key}" aria-pressed="${filter[key]}">${label}</button>`;
     $("#filters").innerHTML = cats.map((c) => `<button data-cat="${esc(c)}" aria-pressed="${filter.cat === c}">${esc(c)}</button>`).join("")
-      + `<button data-soon aria-pressed="${filter.soon}">7일 안에 마감</button>`;
-    const rows = open().filter((r) => (filter.cat === "전체" || r.cat === filter.cat) && (!filter.soon || (!r.rolling && L.dday(r, TODAY) <= 7)));
+      + `<span class="sep"></span>`
+      + ["전체", "서울", "글로벌"].map((c) => `<button data-campus="${c}" aria-pressed="${filter.campus === c}">${c === "전체" ? "캠퍼스 전체" : `${c}캠퍼스`}</button>`).join("")
+      + `<span class="sep"></span>` + toggle("soon", "7일 안에 마감") + toggle("rolling", "상시 모집") + toggle("recommend", "학교 추천 필요");
+    const rows = open().filter((r) => (filter.cat === "전체" || r.cat === filter.cat)
+      && (filter.campus === "전체" || r.campus === "공통" || r.campus === filter.campus)
+      && (!filter.soon || (!r.rolling && L.dday(r, TODAY) <= 7))
+      && (!filter.rolling || r.rolling)
+      && (!filter.recommend || r.method === "학교 추천"));
     $("#list-all").innerHTML = rows.length ? rows.map((r) => card(r, null)).join("") : empty("조건에 맞는 모집 중 공고가 없어요.");
     $("#c-all").textContent = open().length || "";
   }
@@ -178,9 +186,27 @@
       ${old.length ? `<ul>${old.map(line).join("")}</ul><p class="hint">지난 모집의 요건이에요. 다음 모집에서는 달라질 수 있어요.</p>` : `<p class="hint">새로 요건을 충족하는 공고가 없어요.</p>`}`;
   }
 
-  function renderAll() { renderMine(); renderAllTab(); renderFav(); renderPast(); }
+  // ── 마감 달력 ──
+  function renderCal() {
+    const y = calMonth.getFullYear(), m = calMonth.getMonth();
+    $("#cal-title").textContent = `${y}년 ${m + 1}월`;
+    const byDay = {};
+    open().forEach((r) => {
+      const d = L.parseD(r.deadline);
+      if (!r.rolling && d && d.getFullYear() === y && d.getMonth() === m) (byDay[d.getDate()] = byDay[d.getDate()] || []).push(r);
+    });
+    const first = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate();
+    const isToday = (d) => y === TODAY.getFullYear() && m === TODAY.getMonth() && d === TODAY.getDate();
+    let html = ["일", "월", "화", "수", "목", "금", "토"].map((w) => `<div class="dow">${w}</div>`).join("") + `<div class="pad"></div>`.repeat(first);
+    for (let d = 1; d <= days; d++) {
+      html += `<div class="day${isToday(d) ? " today" : ""}${byDay[d] ? " has" : ""}"><span class="n">${d}</span>${(byDay[d] || []).map((r) => `<a href="#" data-open="${r.id}">${esc(r.title)}</a>`).join("")}</div>`;
+    }
+    $("#cal").innerHTML = html;
+  }
 
-  // ── 상세 (확인해봄 + 준비해봄) ──
+  function renderAll() { renderMine(); renderAllTab(); renderCal(); renderFav(); renderPast(); }
+
+  // ── 상세 (요건 비교 + 신청 준비) ──
   const RES = { pass: "충족", fail: "다름", unknown: "입력 필요", check: "원문 확인" };
   function openDetail(id) {
     const r = items.find((x) => x.id === id);
@@ -202,7 +228,7 @@
       </div>
       <p><span class="st ${isOpen ? j.state : "closed"}">${isOpen ? STATE[j.state] : "모집 마감"}</span></p>
 
-      <h3>확인해봄: 지원 요건과 내 조건</h3>
+      <h3>지원 요건과 내 조건</h3>
       ${j.items.length ? `<table><thead><tr><th>항목</th><th>공고 요건</th><th>내 조건</th><th>결과</th></tr></thead><tbody>
         ${j.items.map((i) => `<tr><td>${esc(i.label)}</td><td>${esc(i.need)}${i.note ? `<small>${esc(i.note)}</small>` : ""}</td><td>${esc(i.mine)}</td><td class="res ${i.result}">${RES[i.result]}</td></tr>`).join("")}
       </tbody></table>` : `<p class="hint">정리된 자격 제한이 없어요. 아래 공고 요약과 원문을 확인하세요.</p>`}
@@ -217,7 +243,7 @@
       <dl><dt>지원 금액</dt><dd>${esc(r.amount)}</dd><dt>중복 수혜</dt><dd>${esc(r.dup)}</dd><dt>조건 요약</dt><dd>${esc(r.summary)}</dd>
         <dt>정보 출처</dt><dd>공고 ${esc(r.source)} · ${fmt(r.collectedAt)} 수집</dd></dl>
 
-      <h3>준비해봄: 신청 준비 체크리스트</h3>
+      <h3>신청 준비 체크리스트</h3>
       <ul class="todo">${todo.map((t) => `<li class="${c.done.includes(t.key) ? "done" : ""}"><input type="checkbox" id="td-${t.key}" data-todo="${t.key}" ${c.done.includes(t.key) ? "checked" : ""}><label for="td-${t.key}"><span>${esc(t.text)}</span></label>${t.custom != null ? `<button data-del="${t.custom}" aria-label="삭제">×</button>` : ""}</li>`).join("")}</ul>
       <form class="addtodo" data-add><input name="t" placeholder="직접 추가 (예: 추천서 부탁드리기)" aria-label="할 일 추가"><button>추가</button></form>
 
@@ -231,21 +257,21 @@
     if (!dlg.open) dlg.showModal();
   }
 
-  function saveChecks() { store.set("hjb-checks", checks); renderFav(); }
+  function saveChecks() { store.set("hsf-checks", checks); renderFav(); }
   function entry(id) { return checks[id] || (checks[id] = { done: [], custom: [] }); }
 
   function downloadICS(r) {
     const blob = new Blob([L.buildICS(r, boardUrl(r.id), new Date())], { type: "text/calendar;charset=utf-8" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `장학봄_${r.title.replace(/[\\/:*?"<>|]/g, "")}.ics`;
+    a.download = `외대장학_${r.title.replace(/[\\/:*?"<>|]/g, "")}.ics`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }
 
   function toggleFav(id) {
     if (favs.has(id)) favs.delete(id); else favs.add(id);
-    store.set("hjb-favs", [...favs]);
+    store.set("hsf-favs", [...favs]);
     renderAll();
   }
 
@@ -253,7 +279,7 @@
   function initEvents() {
     document.querySelectorAll("nav.tabs button").forEach((b) => b.addEventListener("click", () => {
       document.querySelectorAll("nav.tabs button").forEach((x) => x.setAttribute("aria-selected", x === b));
-      ["mine", "all", "fav", "past"].forEach((t) => { $(`#tab-${t}`).hidden = t !== b.dataset.tab; });
+      ["mine", "all", "cal", "fav", "past"].forEach((t) => { $(`#tab-${t}`).hidden = t !== b.dataset.tab; });
     }));
 
     document.addEventListener("click", (e) => {
@@ -263,13 +289,19 @@
       if (link) { e.preventDefault(); openDetail(Number(link.dataset.open)); return; }
       const cat = e.target.closest("[data-cat]");
       if (cat) { filter.cat = cat.dataset.cat; renderAllTab(); return; }
-      if (e.target.closest("[data-soon]")) { filter.soon = !filter.soon; renderAllTab(); return; }
+      const campus = e.target.closest("[data-campus]");
+      if (campus) { filter.campus = campus.dataset.campus; renderAllTab(); return; }
+      const tg = e.target.closest("[data-toggle]");
+      if (tg) { filter[tg.dataset.toggle] = !filter[tg.dataset.toggle]; renderAllTab(); return; }
       const c = e.target.closest(".card");
       if (c) openDetail(Number(c.dataset.id));
     });
     document.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && e.target.classList && e.target.classList.contains("card")) openDetail(Number(e.target.dataset.id));
     });
+
+    $("#cal-prev").addEventListener("click", () => { calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() - 1, 1); renderCal(); });
+    $("#cal-next").addEventListener("click", () => { calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + 1, 1); renderCal(); });
 
     const dlg = $("#detail");
     dlg.addEventListener("click", (e) => {

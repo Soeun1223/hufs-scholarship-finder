@@ -14,6 +14,7 @@
   }
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; } /* .grid 의 display 가 hidden 속성을 덮어쓰지 않도록 */
 body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 15px; line-height: 1.55; }
 .wrap { max-width: 1120px; margin: 0 auto; padding: 20px 16px 48px; }
 a { color: var(--accent); }
@@ -93,3 +94,16 @@ ul.todo button { margin-left: auto; padding: 0 6px; border: 0; color: var(--mute
 .addtodo { display: flex; gap: 6px; margin-top: 6px; }
 .addtodo input { margin: 0; }
 footer { margin-top: 28px; font-size: 0.8rem; color: var(--muted); }
+
+/* 마감 달력: 7열 격자. 좁은 화면에서는 공고 이름 대신 건수만 보이지 않도록 글자를 줄인다. */
+.sep { width: 1px; background: var(--line); margin: 0 4px; }
+.cal-head { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 10px; }
+.cal-head h2 { margin: 0; min-width: 120px; text-align: center; }
+.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.cal .dow { text-align: center; font-size: 0.78rem; color: var(--muted); padding: 4px 0; }
+.cal .day { min-height: 84px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 4px 6px; overflow: hidden; }
+.cal .day .n { font-family: var(--num); font-size: 0.78rem; color: var(--muted); }
+.cal .day.today { border-color: var(--accent); }
+.cal .day.today .n { color: var(--accent); font-weight: 700; }
+.cal .day a { display: block; font-size: 0.72rem; line-height: 1.3; margin-top: 3px; padding: 0 4px; max-height: 2.6em; border-radius: 4px; background: var(--hot-soft); color: var(--hot); text-decoration: none; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+@media (max-width: 560px) { .cal .day { min-height: 64px; padding: 3px; } .cal .day a { font-size: 0.62rem; padding: 1px 2px; } }

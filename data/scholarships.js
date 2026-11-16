@@ -1,7 +1,7 @@
-// 외대 장학봄 공고 데이터. 수정 방법은 docs/DATA_GUIDE.md 참고.
+// 외대 장학 찾기 공고 데이터. 수정 방법은 docs/DATA_GUIDE.md 참고.
 (function (root, data) {
   if (typeof module === "object" && module.exports) module.exports = data;
-  else root.HJB_DATA = data;
+  else root.HSF_DATA = data;
 })(this, {
  "meta": {
   "collectedAt": "2026-11-06",

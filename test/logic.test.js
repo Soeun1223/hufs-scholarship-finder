@@ -23,7 +23,7 @@ test("성적 기준이 전체 평점이면 직전 학기 평점으로 판단하�
   assert.equal(L.judge(r, { gpaLast: 4.3, gpaTotal: 3.9 }).state, "no");
 });
 
-test("입력하지 않은 항목은 자격 미달이 아니라 추가 확인 필요", () => {
+test("입력하지 않은 항목은 자격 미달이 아니라 확인 필요", () => {
   const r = { ...base, gpaMin: 3.0, sem: [2, 7] };
   const j = L.judge(r, {});
   assert.equal(j.state, "need");

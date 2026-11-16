@@ -33,7 +33,7 @@
 
   // 공고 r 의 지원 요건과 학생 조건 p 를 항목별로 비교한다.
   // 항목 결과: pass(충족) / fail(다름) / unknown(학생이 입력하지 않음) / check(자동 판단 불가, 원문 확인)
-  // 전체 상태: ok(지원 가능, 입력 조건 기준) / need(추가 확인 필요) / no(현재 조건과 다름)
+  // 전체 상태: ok(지원 가능, 입력 조건 기준) / need(확인 필요) / no(현재 조건과 다름)
   function judge(r, p) {
     const items = [];
     const add = (key, label, need, mine, result, note) =>
@@ -155,11 +155,11 @@
 
   function buildICS(r, url, now) {
     const stamp = `${ymd(now)}T000000Z`;
-    const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//HUFS Janghakbom//KO", "CALSCALE:GREGORIAN"];
+    const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//HUFS Scholarship Finder//KO", "CALSCALE:GREGORIAN"];
     calEvents(r).forEach((e, i) => {
       const end = parseD(e.end);
       end.setDate(end.getDate() + 1); // 종일 일정의 종료일은 다음 날
-      lines.push("BEGIN:VEVENT", `UID:hjb-${r.id}-${i}@janghakbom`, `DTSTAMP:${stamp}`,
+      lines.push("BEGIN:VEVENT", `UID:hsf-${r.id}-${i}@hufs-scholarship-finder`, `DTSTAMP:${stamp}`,
         `DTSTART;VALUE=DATE:${ymd(parseD(e.start))}`, `DTEND;VALUE=DATE:${ymd(end)}`,
         `SUMMARY:${icsEsc(e.title)}`,
         `DESCRIPTION:${icsEsc([e.note, e.tentative ? "정확한 날짜는 원문에서 확인하세요." : "", `원문 공고: ${url}`].filter(Boolean).join("\n"))}`,
