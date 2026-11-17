@@ -38,8 +38,9 @@ h3 { font-size: 0.95rem; margin: 22px 0 8px; color: var(--accent); }
 .hero-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .brand { font-weight: 700; letter-spacing: 0.01em; }
 .snap { font-size: 0.75rem; background: rgba(255, 255, 255, 0.22); border-radius: 999px; padding: 4px 12px; }
-.hero h1 { font-size: clamp(1.8rem, 5vw, 2.4rem); margin: 18px 0 6px; letter-spacing: -0.02em; }
-.hero h1::before { content: ""; display: block; width: 22px; height: 22px; margin: 0 auto 10px; border-radius: 8px; background: #c9ab84; transform: rotate(45deg); }
+/* 교표는 학교 UI 규정에 따라 흰 바탕 위에 원본 색 그대로 둔다 (색을 바꾸거나 늘리지 않는다). */
+.symbol { display: block; width: 72px; height: 72px; margin: 14px auto 0; padding: 6px; border-radius: 50%; background: #fff; box-shadow: 0 4px 16px rgba(0, 20, 40, 0.25); }
+.hero h1 { font-size: clamp(1.8rem, 5vw, 2.4rem); margin: 12px 0 6px; letter-spacing: -0.02em; }
 .lead { margin: 0 0 18px; font-size: 1rem; opacity: 0.95; }
 .disclaimer { display: inline-block; max-width: 640px; margin: 0; font-size: 0.8rem; background: rgba(255, 255, 255, 0.2); border-radius: 18px; padding: 8px 16px; }
 
